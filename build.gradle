@@ -1,0 +1,22 @@
+apply plugin: 'groovy'
+
+repositories {
+	mavenLocal()
+
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.codehaus.groovy:groovy-all:2.4.6'
+	compile 'com.gmongo:gmongo:1.0'
+}
+
+task runScript(type: JavaExec) {
+	description 'Run Groovy script'
+	
+	main = 'com.atimbo.ImportJsonToMongoDb'
+
+    // Set classpath for running the Groovy script.
+    classpath = sourceSets.main.runtimeClasspath
+
+}
