@@ -47,16 +47,30 @@ def db = mongo.getDB(dbName)
 // Drop collection if it exists
 db."$collectionName".drop()
 
+def c = { val ->
+    if (val instanceof BigDecimal) {
+        println "Found BigDecimal. Replacing with Double"
+        return val as Double
+    } else {
+        return val
+    }
+}
+
 // Insert documents from JSON data into mongo collection
-//def c = { val ->
-//    if (val.instanceOf(B))
-//}
 json."$collectionName".each { Map map ->
     println "inserting::${map}"
-    def currencyPrice = map?.currencyPrices[0].value
-    if (currencyPrice && currencyPrice instanceof BigDecimal) {
-        println "Found BigDecimal. Replacing with Double"
-        map.currencyPrices[0].value = currencyPrice as Double
+    // WARNING: This only goes one level deep if the map contains list
+    map.each { k, v ->
+        println "Processing key::${k}"
+        if (v instanceof List) {
+            v.each { Map subMap ->
+                subMap.each { subk, subv ->
+                    subMap[subk] = c(subv)    
+                }
+            }
+        } else {
+            map[k] = c(v)
+        }
     }
     db."$collectionName".insert(map)
 }
