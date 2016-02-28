@@ -53,8 +53,8 @@ db."$collectionName".drop()
 //}
 json."$collectionName".each { Map map ->
     println "inserting::${map}"
-    def currencyPrice = map.currencyPrices[0].value
-    if (currencyPrice instanceof BigDecimal) {
+    def currencyPrice = map?.currencyPrices[0].value
+    if (currencyPrice && currencyPrice instanceof BigDecimal) {
         println "Found BigDecimal. Replacing with Double"
         map.currencyPrices[0].value = currencyPrice as Double
     }
