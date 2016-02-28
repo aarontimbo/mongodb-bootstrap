@@ -7,6 +7,8 @@ package com.atimbo
 ******************************/
 
 import com.gmongo.GMongo
+import groovy.json.JsonOutput
+
 
 String filePath = 'collection.json'
 String serverAddr = '127.0.0.1'
@@ -14,6 +16,15 @@ Integer port = 27017
 String dbName = 'myDB'
 String collectionName = 'things'
 JsonFileHandler reader = new JsonFileHandler()
+
+if (args && args.size() == 3) {
+    dbName = args[0]
+    collectionName = args[1]
+    filePath = args[2]
+} else {
+    showUsage()
+    System.exit(-1)
+}
 
 File jsonFile = new File(filePath)
 
@@ -37,10 +48,27 @@ def db = mongo.getDB(dbName)
 db."$collectionName".drop()
 
 // Insert documents from JSON data into mongo collection
-json."$collectionName".each { 
-    println "inserting::$it" 
-    db."$collectionName".insert(it)
+//def c = { val ->
+//    if (val.instanceOf(B))
+//}
+json."$collectionName".each { Map map ->
+    println "inserting::${map}"
+    def currencyPrice = map.currencyPrices[0].value
+    if (currencyPrice instanceof BigDecimal) {
+        println "Found BigDecimal. Replacing with Double"
+        map.currencyPrices[0].value = currencyPrice as Double
+    }
+    db."$collectionName".insert(map)
 }
-println "things::${db.things.count()}"
+println "${collectionName}::" + db."$collectionName".count()
 
+def showUsage() {
+    println '''\
+        Doh! Execution Failed!
+
+        Usage:
+
+            gradle runScript -PcollectionName=collection -PjsonFile=/path/to/json/file
+            '''.stripIndent()
+}
 println "Done"
