@@ -19,4 +19,16 @@ task runScript(type: JavaExec) {
     // Set classpath for running the Groovy script.
     classpath = sourceSets.main.runtimeClasspath
 
+    if (project.hasProperty('dbName')) {
+        args dbName
+    }
+
+    if (project.hasProperty('collectionName')) {
+        args collectionName
+    }
+
+    if (project.hasProperty('jsonFile')) {
+        args jsonFile
+    }
+
 }
