@@ -82,7 +82,7 @@ def showUsage() {
 
         Usage:
 
-            gradle runScript -PcollectionName=collection -PjsonFile=/path/to/json/file
+            gradle runScript -PdbName=db -PcollectionName=collection -PjsonFile=/path/to/json/file
             '''.stripIndent()
 }
 println "Done"
